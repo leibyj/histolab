@@ -2,6 +2,7 @@ import csv
 import logging
 import os
 import re
+from collections import namedtuple
 from unittest.mock import call
 
 import numpy as np
@@ -54,6 +55,16 @@ class Describe_RandomTiler:
 
         assert tiler.level == expected_level
         assert tiler.mpp == expected_mpp
+
+    @pytest.mark.parametrize(
+        "mpp, fixed_tile_size", ((None, (512, 512)), (0.5, (1024, 1024)))
+    )
+    def it_can_fix_tile_size_if_mpp(self, mpp, fixed_tile_size):
+        fake_slide = namedtuple("fake_slide", ["base_mpp"])
+        tiler = RandomTiler((512, 512), 0, True, 80, 0, "", ".png", mpp=mpp)
+        tiler._fix_tile_size_if_mpp(fake_slide(0.25))
+
+        assert tiler.tile_size == fixed_tile_size
 
     def but_it_has_wrong_tile_size_value(self):
         with pytest.raises(ValueError) as err:
@@ -434,6 +445,27 @@ class Describe_GridTiler:
         assert isinstance(grid_tiler, GridTiler)
         assert isinstance(grid_tiler, Tiler)
 
+    @pytest.mark.parametrize(
+        "level, mpp, expected_level, expected_mpp",
+        ((2, None, 2, None), (None, 0.5, 0, 0.5), (2, 0.5, 0, 0.5)),
+    )
+    def mpp_supercedes_level(self, level, mpp, expected_level, expected_mpp):
+
+        tiler = GridTiler((512, 512), level=level, mpp=mpp)
+
+        assert tiler.level == expected_level
+        assert tiler.mpp == expected_mpp
+
+    @pytest.mark.parametrize(
+        "mpp, fixed_tile_size", ((None, (512, 512)), (0.5, (1024, 1024)))
+    )
+    def it_can_fix_tile_size_if_mpp(self, mpp, fixed_tile_size):
+        fake_slide = namedtuple("fake_slide", ["base_mpp"])
+        tiler = GridTiler((512, 512), 0, True, 80, 0, "", ".png", mpp=mpp)
+        tiler._fix_tile_size_if_mpp(fake_slide(0.25))
+
+        assert tiler.tile_size == fixed_tile_size
+
     def but_it_has_wrong_tile_size_value(self):
         with pytest.raises(ValueError) as err:
             GridTiler((512, -1))
@@ -596,8 +628,8 @@ class Describe_GridTiler:
 
         assert _extract_tile.call_args_list == (
             [
-                call(slide, CP(0, 10, 0, 10), 0, (10, 10)),
-                call(slide, CP(0, 10, 0, 10), 0, (10, 10)),
+                call(slide, CP(0, 10, 0, 10), tile_size=(10, 10), level=0, mpp=None),
+                call(slide, CP(0, 10, 0, 10), tile_size=(10, 10), level=0, mpp=None),
             ]
         )
         assert _has_enough_tissue.call_args_list == [call(tile1, 60), call(tile2, 60)]
@@ -652,8 +684,8 @@ class Describe_GridTiler:
 
         assert _extract_tile.call_args_list == (
             [
-                call(slide, CP(0, 10, 0, 10), 0, (10, 10)),
-                call(slide, CP(0, 10, 0, 10), 0, (10, 10)),
+                call(slide, CP(0, 10, 0, 10), tile_size=(10, 10), level=0, mpp=None),
+                call(slide, CP(0, 10, 0, 10), tile_size=(10, 10), level=0, mpp=None),
             ]
         )
         _has_enough_tissue.assert_not_called()
@@ -1097,8 +1129,8 @@ class Describe_ScoreTiler:
         score_tiler.extract(slide, binary_mask)
 
         assert _extract_tile.call_args_list == [
-            call(slide, coords, 0, (10, 10)),
-            call(slide, coords, 0, (10, 10)),
+            call(slide, coords, tile_size=(10, 10), level=0, mpp=None),
+            call(slide, coords, tile_size=(10, 10), level=0, mpp=None),
         ]
         _tiles_generator.assert_called_with(score_tiler, slide, binary_mask)
         assert _tile_filename.call_args_list == [
@@ -1201,8 +1233,8 @@ class Describe_ScoreTiler:
         score_tiler.extract(slide, binary_mask, "report.csv")
 
         assert _extract_tile.call_args_list == [
-            call(slide, coords, 0, (10, 10)),
-            call(slide, coords, 0, (10, 10)),
+            call(slide, coords, tile_size=(10, 10), level=0, mpp=None),
+            call(slide, coords, tile_size=(10, 10), level=0, mpp=None),
         ]
         _tiles_generator.assert_called_with(score_tiler, slide, binary_mask)
         assert _tile_filename.call_args_list == [
