@@ -44,8 +44,9 @@ if TYPE_CHECKING:
 
 # If possible, use large_image because it extends openslide to more formats
 try:
-    import large_image
     from io import BytesIO
+
+    import large_image
 
     LARGEIMAGE_IS_INSTALLED = True
 
@@ -200,7 +201,7 @@ class Slide:
             image = image.convert("RGB")
             # Sometimes when mpp kwarg is used, the image size is off from
             # what the user expects by a couple of pixels
-            if not all(tile_size[i] == j for i, j in enumerate(image.size)):
+            if not tile_size == image.size:
                 image = image.resize(
                     tile_size,
                     IMG_UPSAMPLE_MODE
