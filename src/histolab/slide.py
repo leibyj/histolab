@@ -82,6 +82,12 @@ class Slide:
         resolutions as opposed to levels. Different scanners have different
         specifications, and the same level may not always encode the same
         magnification in different scanners and slide formats.
+
+    Raises
+    ------
+    ModuleNotFoundError
+        when `use_largeimage` is set to True and `large_image` module is not
+        installed.
     """
 
     def __init__(
@@ -120,6 +126,13 @@ class Slide:
         float
             Microns-per-pixel resolution at scan (base) magnification.
 
+        Raises
+        ------
+        ValueError
+            If `large_image` cannot detemine the slide magnification.
+        MayNeedLargeImageError
+            If `use_largeimage` was set to False when slide was initialized,
+            and we cannot determine the magnification otherwise.
         """
         if self._use_largeimage:
             if self._metadata["mm_x"] is not None:
@@ -437,12 +450,13 @@ class Slide:
     # ------- implementation helpers -------
 
     @staticmethod
-    def _bytes2pil(bytesim):
+    def _bytes2pil(bytesim: bytearray):
         """Convert a bytes image to a PIL image object.
 
         Parameters
         ----------
-        bytesim : A bytes object.
+        bytesim : bytearray
+            A bytes object representation of an image.
 
         Returns
         -------
@@ -609,6 +623,11 @@ class Slide:
         -------
         Tuple[int, int]
             Thumbnail size
+
+        Raises
+        ------
+        MayNeedLargeImageError
+            If `use_largeimage` was set to False when slide was initialized.
         """
         if self._use_largeimage:
             raise MayNeedLargeImageError(
@@ -631,6 +650,11 @@ class Slide:
         -------
         source : large_image TileSource object
             An TileSource object representing a whole-slide image.
+
+        Raises
+        ------
+        MayNeedLargeImageError
+            If `use_largeimage` was set to False when slide was initialized.
         """
         if not self._use_largeimage:
             raise MayNeedLargeImageError(
