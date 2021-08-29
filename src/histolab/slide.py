@@ -37,7 +37,6 @@ from .tile import Tile
 from .types import CoordinatePair
 from .util import lazyproperty
 
-try:
 if TYPE_CHECKING:
     from .masks import BinaryMask
 
@@ -49,7 +48,6 @@ try:
     import large_image
 
     LARGEIMAGE_IS_INSTALLED = True
-
 except (ModuleNotFoundError, ImportError):  # pragma: no cover
     LARGEIMAGE_IS_INSTALLED = False
 
