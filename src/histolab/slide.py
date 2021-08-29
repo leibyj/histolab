@@ -40,8 +40,6 @@ from .util import lazyproperty
 if TYPE_CHECKING:
     from .masks import BinaryMask
 
-
-# If possible, use large_image because it extends openslide to more formats
 try:
     from io import BytesIO
 
