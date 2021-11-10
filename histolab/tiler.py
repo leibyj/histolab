@@ -127,7 +127,7 @@ class Tiler(Protocol):
                 if isinstance(self, ScoreTiler)
                 else self._tiles_generator(slide, extraction_mask)
             )
-        tiles_coords = (tile[1] for tile in tiles)
+        tiles_coords = (tile._coords for tile in tiles)
 
         for coords, one_outline in self._tile_coords_and_outline_generator(
             tiles_coords, outline
