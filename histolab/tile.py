@@ -43,7 +43,7 @@ class Tile(enum.Enum):
         Level of tile extraction, by default 0
     """
 
-    def __init__(self, image: PIL.Image.Image, coords: CoordinatePair, level: int = 0, color=None):
+    def __init__(self, image, coords, level, color):
         self._image = image
         self._coords = coords
         self._color = color
