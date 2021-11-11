@@ -22,7 +22,6 @@ from typing import Union
 
 import numpy as np
 import PIL
-import enum
 
 from .filters import image_filters as imf
 from .filters.compositions import FiltersComposition
@@ -43,7 +42,7 @@ class Tile:
         Level of tile extraction, by default 0
     """
 
-    def __init__(self, image, coords, level, color):
+    def __init__(self, image: PIL.Image.Image, coords: CoordinatePair, color=None, level: int = 0):
         self._image = image
         self._coords = coords
         self._color = color
