@@ -18,7 +18,7 @@
 
 import os
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional, Tuple
 
 import numpy as np
 import PIL
