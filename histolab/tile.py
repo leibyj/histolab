@@ -42,7 +42,7 @@ class Tile:
         Level of tile extraction, by default 0
     """
 
-    def __init__(self, image: PIL.Image.Image, coords: CoordinatePair, color=None, level: int = 0):
+    def __init__(self, image: PIL.Image.Image, coords: CoordinatePair, color: Optional[Tuple[int,int,int]] = None, level: int = 0):
         self._image = image
         self._coords = coords
         self._color = color
