@@ -22,6 +22,7 @@ from typing import Union
 
 import numpy as np
 import PIL
+import enum
 
 from .filters import image_filters as imf
 from .filters.compositions import FiltersComposition
@@ -29,7 +30,7 @@ from .types import CoordinatePair
 from .util import lazyproperty
 
 
-class Tile:
+class Tile(enum.Enum):
     """Provide Tile object representing a tile generated from a Slide object.
 
     Arguments
@@ -42,9 +43,10 @@ class Tile:
         Level of tile extraction, by default 0
     """
 
-    def __init__(self, image: PIL.Image.Image, coords: CoordinatePair, level: int = 0):
+    def __init__(self, image: PIL.Image.Image, coords: CoordinatePair, color=None, level: int = 0):
         self._image = image
         self._coords = coords
+        self._color = color
         self._level = level
 
     def apply_filters(

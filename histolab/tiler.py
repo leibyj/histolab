@@ -128,12 +128,13 @@ class Tiler(Protocol):
                 else self._tiles_generator(slide, extraction_mask)
             )
         tiles_coords = (tile._coords for tile in tiles)
+        tile_colors = (tile._color for tile in tiles)
 
-        for coords, one_outline in self._tile_coords_and_outline_generator(
-            tiles_coords, outline
+        for coords, color, one_outline in self._tile_coords_and_outline_generator(
+            tiles_coords, tile_colors, outline
         ):
             rescaled = scale_coordinates(coords, slide.dimensions, img.size)
-            draw.rectangle(tuple(rescaled), outline=one_outline, width=linewidth)
+            draw.rectangle(tuple(rescaled), fill=color, outline=one_outline, width=linewidth)
         return img
 
     # ------- implementation helpers -------
@@ -160,6 +161,7 @@ class Tiler(Protocol):
     @staticmethod
     def _tile_coords_and_outline_generator(
         tiles_coords: Iterable[CoordinatePair],
+        tile_colors: Iterable[Tuple[int,int,int]]
         outlines: Union[str, List[str], List[Tuple[int]]],
     ) -> Union[str, Tuple[int]]:
         """Zip tile coordinates and outlines from tile and outline iterators.
@@ -179,16 +181,16 @@ class Tiler(Protocol):
             Fixed outline depending on user input to used by method ``locate_tiles``.
         """
         if isinstance(outlines, str):
-            for coords in tiles_coords:
-                yield coords, outlines
+            for coords, color in zip(tiles_coords, tile_colors):
+                yield coords, color, outlines
 
         elif hasattr(outlines, "__iter__"):
-            for coords, one_outline in zip_longest(tiles_coords, outlines):
-                if None in (coords, one_outline):
+            for coords, color, one_outline in zip_longest(tiles_coords, tile_colors, outlines):
+                if None in (coords, color, one_outline):
                     raise ValueError(
                         "There should be as many outlines as there are tiles!"
                     )
-                yield coords, one_outline
+                yield coords, color, one_outline
 
         else:
             raise ValueError(
