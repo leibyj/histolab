@@ -30,7 +30,7 @@ from .types import CoordinatePair
 from .util import lazyproperty
 
 
-class Tile(enum.Enum):
+class Tile:
     """Provide Tile object representing a tile generated from a Slide object.
 
     Arguments
