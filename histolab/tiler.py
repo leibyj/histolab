@@ -161,7 +161,7 @@ class Tiler(Protocol):
     @staticmethod
     def _tile_coords_and_outline_generator(
         tiles_coords: Iterable[CoordinatePair],
-        tile_colors: Iterable[Tuple[int,int,int]]
+        tile_colors: Iterable[Tuple[int,int,int]],
         outlines: Union[str, List[str], List[Tuple[int]]],
     ) -> Union[str, Tuple[int]]:
         """Zip tile coordinates and outlines from tile and outline iterators.
